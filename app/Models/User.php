@@ -4,6 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -49,4 +52,50 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // uno a muchos destiono
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+    // uno a muchos origen
+    public function moduleUserPermissions(): HasMany
+    {
+        return $this->hasMany(ModuleUserPermission::class);
+    }
+    // uno a uno origen
+    public function doctorDetail(): HasOne
+    {
+        return $this->hasOne(DoctorDetail::class, 'id', 'doctor_id');
+    }
+
+    public function appointmentsAsPatient(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'id', 'patient_id');
+    }
+    public function appointmentsAsDoctor(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'id', 'doctor_id');
+    }
+
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class, 'id', 'doctor_id');
+    }
+
+
+    public function medicalRecordsAsPatient(): HasMany
+    {
+        return $this->hasMany(MedicalRecord::class, 'id', 'patient_id');
+    }
+    public function medicalRecordsAsDoctor(): HasMany
+    {
+        return $this->hasMany(MedicalRecord::class, 'id', 'doctor_id');
+    }
+
+    public function consultationsAsDoctor(): HasMany
+    {
+        return $this->hasMany(Consultation::class, 'id', 'doctor_id');
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Utils\FileHandler;
 use App\Utils\SimpleCRUD;
@@ -24,7 +25,7 @@ class UserController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        return $this->crud->index(null, $request->pagination);
+        return $this->crud->index(UserResource::class, $request->pagination);
     }
 
     /**
