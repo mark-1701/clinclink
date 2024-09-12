@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Utils\FileHandler;
 use App\Utils\SimpleCRUD;
+use App\Utils\SimpleJSONResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -34,9 +38,10 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RegisterRequest $request): JsonResponse
     {
-        //
+        $authController = new AuthController();
+        return $authController->register($request);
     }
 
     /**
@@ -58,9 +63,31 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, string $id): JsonResponse
     {
-        //
+        // clase todavia el desarrollo
+        $findEmail = User::withTrashed()
+            ->where('email', $request->email)
+            ->where('id', '<>', $id)
+            ->first();
+        $findUsername = User::withTrashed()
+            ->where('username', $request->username)
+            ->where('id', '<>', $id)
+            ->first();
+        if ($findEmail) {
+            return SimpleJSONResponse::errorResponse('El email ya esta registrado', 400);
+        } else if ($findUsername) {
+            return SimpleJSONResponse::errorResponse('El username ya esta registrado', 400);
+
+        }
+
+        $password = $request->input('password');
+        $request->merge(['password' => bcrypt($password)]);
+        return $this->crud->update(
+            FileHandler::handleSingleFileUpload($request, 'profile_picture_uri'),
+            $id,
+            null
+        );
     }
 
     /**

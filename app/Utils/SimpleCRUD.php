@@ -12,7 +12,7 @@ class SimpleCRUD
     {
         $this->model = $model;
     }
-
+    // verificar si contiene un resourceClass para aplicar o no serializacion
     public function validateResourceApplicability($resourceClass, $data)
     {
         return $resourceClass !== null ? new $resourceClass($data) : $data;

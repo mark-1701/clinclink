@@ -2,40 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginRequest;
+use App\Utils\FileHandler;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Utils\SimpleCRUD;
 use App\Utils\SimpleJSONResponse;
 use Hash;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function register(LoginRequest $request)
+    public $crud;
+
+    public function __construct()
     {
-        $user = new User();
-        $user->role_id = $request->role_id;
-        $user->username = $request->username;
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->phone_number = $request->phone_number;
-        $user->date_of_birth = $request->date_of_birth;
-        $user->save();
-
-        return SimpleJSONResponse::successResponse(
-            null,
-            'Registro de usuario exitoso',
-            200
-        );
-
+        $this->crud = new SimpleCRUD(new User);
     }
-    public function login(Request $request)
+
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $password = $request->input('password');
+        $request->merge(['password' => bcrypt($password)]);
+        return $this->crud->store(
+            FileHandler::handleSingleFileUpload($request, 'profile_picture_uri'),
+            null
+        );
+    }
+    public function login(Request $request): JsonResponse
     {
         // validations
         $request->validate([
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed'
+            'email' => 'required|email',
+            'password' => 'required|min:5|confirmed'
         ]);
         $user = User::where('email', '=', $request->email)->first();
         if (isset($user->id)) {
@@ -44,39 +43,37 @@ class AuthController extends Controller
                 $token = $user->createToken('auth_token')->plainTextToken;
                 // si todo ok
                 return SimpleJSONResponse::successResponse(
-                    null,
+                    $token,
                     'Usuario logueado exitosamente',
                     200
                 );
             } else {
-                return SimpleJSONResponse::successResponse(
-                    null,
-                    'Password incorrecta',
+                return SimpleJSONResponse::errorResponse(
+                    'Contrasenia incorrecta',
                     400
                 );
             }
         } else {
-            return SimpleJSONResponse::successResponse(
-                null,
+            return SimpleJSONResponse::errorResponse(
                 'Usuario no encontrado',
                 400
             );
         }
     }
-    public function userProfile()
+    public function userProfile(): JsonResponse
     {
         return SimpleJSONResponse::successResponse(
             auth()->user(),
-            'Informacin del perfil del usuario',
+            'Informacion de prueba de informacion de usuario',
             200
         );
     }
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->user()->tokens()->delete();
         return SimpleJSONResponse::successResponse(
             null,
-            'Cirre de sesion',
+            'Cerro session exitosamente',
             200
         );
     }

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\UniqueOrSoftDeletedRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,13 +24,23 @@ class LoginRequest extends FormRequest
     {
         return [
             'role_id' => 'required',
-            'username' => 'required|min:3|unique:users',
+            'username' => [
+                'required',
+                'min:3',
+                new UniqueOrSoftDeletedRule,
+            ],
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',
-            'email' => 'required|email|unique:users',
+            'email' => [
+                'required',
+                'email',
+                new UniqueOrSoftDeletedRule,
+            ],
             'password' => 'required|min:5|confirmed',
             'phone_number' => 'required|min:8',
-            'date_of_birth' => 'required|date'
+            'date_of_birth' => 'required|date',
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }
+
