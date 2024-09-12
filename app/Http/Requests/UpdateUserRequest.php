@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\UniqueExceptSelfRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -22,12 +22,22 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->route('user');
         return [
             'role_id' => 'required',
-            'username' => 'required|min:3',
+            'username' => [
+                'required',
+                'min:3',
+                Rule::unique('users')->ignore($userId),
+            ],
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',
-            'email' => 'required|email',
+            'email' => [
+                'required',
+                'email',
+                // Verificar que el email sea único incluso entre registros eliminados
+                Rule::unique('users')->ignore($userId),
+            ],
             'password' => 'required|min:5|confirmed',
             'phone_number' => 'required|min:8',
             'date_of_birth' => 'required|date',

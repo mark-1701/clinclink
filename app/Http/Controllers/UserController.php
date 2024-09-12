@@ -65,22 +65,6 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $id): JsonResponse
     {
-        // clase todavia el desarrollo
-        $findEmail = User::withTrashed()
-            ->where('email', $request->email)
-            ->where('id', '<>', $id)
-            ->first();
-        $findUsername = User::withTrashed()
-            ->where('username', $request->username)
-            ->where('id', '<>', $id)
-            ->first();
-        if ($findEmail) {
-            return SimpleJSONResponse::errorResponse('El email ya esta registrado', 400);
-        } else if ($findUsername) {
-            return SimpleJSONResponse::errorResponse('El username ya esta registrado', 400);
-
-        }
-
         $password = $request->input('password');
         $request->merge(['password' => bcrypt($password)]);
         return $this->crud->update(
