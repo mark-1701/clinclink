@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('modules', function (Blueprint $table) {
+        Schema::create('resource_rooms', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->softDeletes()->unique();
+            $table->unsignedBigInteger('resource_id');
+            $table->unsignedBigInteger('room_id');
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('resource_id')->references('id')->on('resources');
+            $table->foreign('room_id')->references('id')->on('rooms');
         });
     }
 
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('modules');
+        Schema::dropIfExists('resource_rooms');
     }
 };

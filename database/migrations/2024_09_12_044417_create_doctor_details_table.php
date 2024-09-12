@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('modules', function (Blueprint $table) {
+        Schema::create('doctor_details', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->softDeletes()->unique();
+            $table->unsignedBigInteger('doctor_id')->unique();
+            $table->bigInteger('license_number')->unique();
+            $table->integer('years_of_experience');
+            $table->softDeletes();
             $table->timestamps();
+            $table->foreign('doctor_id')->references('id')->on('users');
         });
     }
 
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('modules');
+        Schema::dropIfExists('doctor_details');
     }
 };
