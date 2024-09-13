@@ -21,6 +21,7 @@ class SimpleCRUD
     public function index($resourceClass = null, $paginationNumber = 0): JsonResponse
     {
         try {
+            // validar si hay paginacion
             $validatePagination = $paginationNumber && $paginationNumber > 0;
             // consultar registros
             $data = $validatePagination ? $this->model::paginate($paginationNumber) : $this->model::all();
@@ -32,7 +33,7 @@ class SimpleCRUD
             // respuesta
             return SimpleJSONResponse::successResponse(
                 $data,
-                ucfirst($this->model->getTable()) . ' consultados exitosamente.',
+                ucfirst($this->model->getTable()) . ' consultados exitosamente',
                 200
             );
         } catch (\Exception $e) {
@@ -51,7 +52,7 @@ class SimpleCRUD
             $data = $this->validateResourceApplicability($resourceClass, $data);
             return SimpleJSONResponse::successResponse(
                 $data,
-                'Registro creado exitosamente en la tabla ' . $this->model->getTable() . '.',
+                'Registro creado exitosamente en la tabla ' . $this->model->getTable(),
                 200
             );
         } catch (\Exception $e) {
@@ -69,7 +70,7 @@ class SimpleCRUD
             $data = $this->validateResourceApplicability($resourceClass, $data);
             return SimpleJSONResponse::successResponse(
                 $data,
-                'Registro consultado exitosamente en la tabla ' . $this->model->getTable() . '.',
+                'Registro consultado exitosamente en la tabla ' . $this->model->getTable(),
                 200
             );
         } catch (\Exception $e) {
@@ -89,7 +90,7 @@ class SimpleCRUD
             $data = $this->validateResourceApplicability($resourceClass, $data);
             return SimpleJSONResponse::successResponse(
                 $data,
-                'Registro actualizado exitosamente en la tabla ' . $this->model->getTable() . '.',
+                'Registro actualizado exitosamente en la tabla ' . $this->model->getTable(),
                 200
             );
         } catch (\Exception $e) {
@@ -106,7 +107,7 @@ class SimpleCRUD
             $this->model::find($id)->delete();
             return SimpleJSONResponse::successResponse(
                 null,
-                'Registro eliminado exitosamente en la tabla ' . $this->model->getTable() . '.',
+                'Registro eliminado exitosamente en la tabla ' . $this->model->getTable(),
                 200
             );
         } catch (\Exception $e) {

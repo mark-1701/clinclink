@@ -14,7 +14,7 @@ class DoctorDetail extends Model
     protected $guarded = [];
     public function user(): BelongsTo 
     {
-        return $this->belongsTo(DoctorDetail::class, 'doctor_id', 'id');
+        return $this->belongsTo(DoctorDetail::class, 'doctor_id');
     }
     public function doctorDetailSpecializations(): HasMany
     {
